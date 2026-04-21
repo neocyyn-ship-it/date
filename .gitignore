@@ -1,0 +1,14 @@
+node_modules
+out
+release
+db
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+pnpm-debug.log*
+dist
+tools
+pnpm.exe
+samples-*.xls
+samples-*.xlsx

@@ -1,0 +1,66 @@
+{
+  "name": "ecom-analytics-desktop",
+  "version": "0.1.0",
+  "description": "女装电商经营分析桌面应用",
+  "main": "out/main/index.js",
+  "author": "OpenAI Codex",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "build:win": "electron-vite build && electron-builder --win nsis",
+    "build:mac": "electron-vite build && electron-builder --mac dmg",
+    "preview:data": "node scripts/inspect-samples.mjs",
+    "test:import": "tsx scripts/test-import.ts"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^6.1.1",
+    "@duckdb/node-api": "1.5.2-r.1",
+    "antd": "^6.3.6",
+    "dayjs": "^1.11.20",
+    "echarts": "^6.0.0",
+    "echarts-for-react": "^3.0.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.14.1",
+    "xlsx": "^0.18.5",
+    "zod": "^4.3.6",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.0",
+    "electron": "^41.2.1",
+    "electron-builder": "^26.8.1",
+    "electron-vite": "^5.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.local.ecom.analytics",
+    "productName": "女装电商经营分析工作台",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "out/**/*",
+      "resources/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ]
+    }
+  }
+}

@@ -19,6 +19,7 @@ export function ProductDetailDrawer({ open, detail, onClose }: Props) {
       { name: '总成交金额', type: 'bar', data: detail?.trend.map((item) => item.totalGmv) ?? [] }
     ]
   };
+
   const structureOption = {
     tooltip: { trigger: 'item' },
     series: [
@@ -33,6 +34,7 @@ export function ProductDetailDrawer({ open, detail, onClose }: Props) {
       }
     ]
   };
+
   return (
     <Drawer title="商品详情" width={720} open={open} onClose={onClose}>
       {!detail?.product ? (

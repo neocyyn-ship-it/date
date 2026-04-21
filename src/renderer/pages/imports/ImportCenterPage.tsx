@@ -1,10 +1,12 @@
 import { InboxOutlined } from '@ant-design/icons';
-import { Alert, Button, Card, Descriptions, List, Space, Table, Typography, Upload, message } from 'antd';
-import { useState } from 'react';
+import { Alert, Button, Card, Descriptions, List, Space, Statistic, Table, Typography, Upload, message } from 'antd';
+import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { ImportCommitResult, ImportPreviewResult } from '@shared/types';
 import { FieldMappingEditor } from './FieldMappingEditor';
 
 export function ImportCenterPage() {
+  const navigate = useNavigate();
   const [files, setFiles] = useState<string[]>([]);
   const [imageDir, setImageDir] = useState<string>('');
   const [imageScan, setImageScan] = useState<{ matchedCount: number; samples: Array<{ code: string; path: string }> } | null>(null);
@@ -14,6 +16,20 @@ export function ImportCenterPage() {
   const [loading, setLoading] = useState(false);
 
   const activeSourceType = preview[0]?.sourceType;
+
+  const resultSummary = useMemo(() => {
+    return result.reduce(
+      (acc, item) => {
+        acc.batchCount += 1;
+        acc.inserted += item.insertedCount;
+        acc.replaced += item.replacedCount;
+        acc.failed += item.errors.length ? 1 : 0;
+        acc.periods += item.addedPeriods.length;
+        return acc;
+      },
+      { batchCount: 0, inserted: 0, replaced: 0, failed: 0, periods: 0 }
+    );
+  }, [result]);
 
   const selectFiles = async () => {
     const selected = await window.ecomApi.importer.selectFiles();
@@ -72,12 +88,13 @@ export function ImportCenterPage() {
   return (
     <div className="page-stack">
       <Card className="panel-card">
-        <Space>
+        <Space wrap>
           <Button type="primary" onClick={selectFiles}>选择 Excel 文件</Button>
           <Button onClick={loadSamples}>加载样例数据</Button>
           <Button onClick={selectImageDirectory}>选择图片目录</Button>
           <Button onClick={previewImport} disabled={!files.length} loading={loading}>预览清洗结果</Button>
           <Button type="primary" onClick={commitImport} disabled={!files.length} loading={loading}>确认导入</Button>
+          <Button onClick={() => navigate('/import-logs')}>查看导入记录</Button>
         </Space>
         <Upload.Dragger openFileDialogOnClick={false} showUploadList={false} style={{ marginTop: 16 }}>
           <p className="ant-upload-drag-icon"><InboxOutlined /></p>
@@ -160,23 +177,40 @@ export function ImportCenterPage() {
       )}
 
       {!!result.length && (
-        <Card className="panel-card" title="导入结果">
-          {result.map((item) => (
-            <Alert
-              key={item.batch.batchId}
-              style={{ marginBottom: 12 }}
-              type={item.errors.length ? 'error' : 'success'}
-              message={`${item.batch.fileName}：新增 ${item.insertedCount} 条，替换 ${item.replacedCount} 条`}
-              description={
-                <div>
-                  <Typography.Paragraph>新增周期：{item.addedPeriods.join('、') || '无'}</Typography.Paragraph>
-                  <Typography.Paragraph>替换周期：{item.replacedPeriods.join('、') || '无'}</Typography.Paragraph>
-                  <Typography.Paragraph>错误日志：{item.errors.join('；') || '无'}</Typography.Paragraph>
-                </div>
-              }
-            />
-          ))}
-        </Card>
+        <>
+          <Space size={16} style={{ width: '100%' }} wrap>
+            <Card className="panel-card" style={{ minWidth: 220 }}>
+              <Statistic title="本次导入批次" value={resultSummary.batchCount} />
+            </Card>
+            <Card className="panel-card" style={{ minWidth: 220 }}>
+              <Statistic title="新增记录" value={resultSummary.inserted} valueStyle={{ color: '#3f8600' }} />
+            </Card>
+            <Card className="panel-card" style={{ minWidth: 220 }}>
+              <Statistic title="替换记录" value={resultSummary.replaced} valueStyle={{ color: '#1677ff' }} />
+            </Card>
+            <Card className="panel-card" style={{ minWidth: 220 }}>
+              <Statistic title="失败批次 / 涉及周期" value={`${resultSummary.failed} / ${resultSummary.periods}`} />
+            </Card>
+          </Space>
+
+          <Card className="panel-card" title="导入结果">
+            {result.map((item) => (
+              <Alert
+                key={item.batch.batchId}
+                style={{ marginBottom: 12 }}
+                type={item.errors.length ? 'error' : 'success'}
+                message={`${item.batch.fileName}：新增 ${item.insertedCount} 条，替换 ${item.replacedCount} 条`}
+                description={
+                  <div>
+                    <Typography.Paragraph>新增周期：{item.addedPeriods.join('、') || '无'}</Typography.Paragraph>
+                    <Typography.Paragraph>替换周期：{item.replacedPeriods.join('、') || '无'}</Typography.Paragraph>
+                    <Typography.Paragraph>错误日志：{item.errors.join('；') || '无'}</Typography.Paragraph>
+                  </div>
+                }
+              />
+            ))}
+          </Card>
+        </>
       )}
     </div>
   );

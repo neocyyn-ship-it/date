@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { MainLayout } from '@renderer/layouts/MainLayout';
 import { DashboardPage } from '@renderer/pages/dashboard/DashboardPage';
+import { CorrelationsPage } from '@renderer/pages/correlations/CorrelationsPage';
 import { MarketingPage } from '@renderer/pages/marketing/MarketingPage';
 import { RefundsPage } from '@renderer/pages/refunds/RefundsPage';
 import { ProductsPage } from '@renderer/pages/products/ProductsPage';
@@ -13,6 +14,7 @@ export function AppRouter() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/correlations" element={<CorrelationsPage />} />
         <Route path="/marketing" element={<MarketingPage />} />
         <Route path="/refunds" element={<RefundsPage />} />
         <Route path="/products" element={<ProductsPage />} />

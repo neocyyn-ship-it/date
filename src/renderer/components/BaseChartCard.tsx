@@ -6,9 +6,10 @@ interface Props {
   loading?: boolean;
   option: Record<string, unknown>;
   height?: number;
+  onEvents?: Record<string, (params: unknown) => void>;
 }
 
-export function BaseChartCard({ title, loading, option, height = 340 }: Props) {
+export function BaseChartCard({ title, loading, option, height = 340, onEvents }: Props) {
   return (
     <Card className="panel-card" title={title}>
       {loading ? (
@@ -20,7 +21,7 @@ export function BaseChartCard({ title, loading, option, height = 340 }: Props) {
           <Empty description="暂无图表数据" />
         </div>
       ) : (
-        <ReactECharts style={{ height }} option={option} notMerge lazyUpdate />
+        <ReactECharts style={{ height }} option={option} notMerge lazyUpdate onEvents={onEvents} />
       )}
     </Card>
   );

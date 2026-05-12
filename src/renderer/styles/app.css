@@ -44,3 +44,13 @@ body,
   align-items: center;
   justify-content: center;
 }
+
+.saved-view-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 16px;
+}
+
+.saved-view-item {
+  min-height: 100%;
+}

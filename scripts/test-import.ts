@@ -29,10 +29,26 @@ async function main() {
   const dashboard = await AnalyticsService.getDashboard({});
   const products = await AnalyticsService.getProducts({});
   const refunds = await AnalyticsService.getRefundDiagnostics({});
+  const filters = await AnalyticsService.getFilters();
+  const marketing = await AnalyticsService.getMarketing({});
 
   console.log('DASHBOARD_METRICS');
   console.log(JSON.stringify(dashboard.metrics, null, 2));
+  console.log('FILTERS');
+  console.log(JSON.stringify(filters, null, 2));
   console.log('PRODUCT_COUNT', products.length);
+  console.log(
+    'MARKETING_COUNTS',
+    JSON.stringify(
+      {
+        naturalStrong: marketing.naturalStrong.length,
+        adsDriven: marketing.adsDriven.length,
+        highSpendLowOutput: marketing.highSpendLowOutput.length
+      },
+      null,
+      2
+    )
+  );
   console.log('TRIPLE_HIGH_COUNT', refunds.tripleHighList.length);
   console.log('IMAGE_DIR', imageDirectory || '未提供');
 }

@@ -1,13 +1,30 @@
-import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
+import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { AnalyticsService } from '@backend/analytics/AnalyticsService';
+import { duckDbClient } from '@backend/db/client';
 import { FieldMappingConfigService } from '@backend/importers/FieldMappingConfigService';
 import { ImportBatchService } from '@backend/importers/ImportBatchService';
-import { duckDbClient } from '@backend/db/client';
 import type { SourceType } from '@shared/types';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+function resolvePreloadPath() {
+  const rootCjsPath = join(process.cwd(), 'preload.cjs');
+  const mjsPath = join(__dirname, '../preload/index.mjs');
+  const jsPath = join(__dirname, '../preload/index.js');
+
+  if (existsSync(rootCjsPath)) {
+    return rootCjsPath;
+  }
+
+  if (existsSync(mjsPath)) {
+    return mjsPath;
+  }
+
+  return jsPath;
+}
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -18,13 +35,15 @@ function createWindow() {
     show: false,
     title: '女装电商经营分析工作台',
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: resolvePreloadPath(),
       contextIsolation: true,
       nodeIntegration: false
     }
   });
 
-  win.once('ready-to-show', () => win.show());
+  win.once('ready-to-show', () => {
+    win.show();
+  });
 
   if (process.env.ELECTRON_RENDERER_URL) {
     win.loadURL(process.env.ELECTRON_RENDERER_URL);
@@ -88,11 +107,16 @@ app.whenReady().then(async () => {
   ipcMain.handle('system:getSampleFiles', () => [join(process.cwd(), 'samples-product.xls'), join(process.cwd(), 'samples-refund.xlsx')]);
 
   createWindow();
+
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
   });
 });
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });

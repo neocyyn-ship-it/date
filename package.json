@@ -48,6 +48,7 @@
     },
     "files": [
       "out/**/*",
+      "preload.cjs",
       "resources/**/*",
       "package.json"
     ],

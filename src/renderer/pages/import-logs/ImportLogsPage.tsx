@@ -1,9 +1,10 @@
 import { CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined, ReloadOutlined } from '@ant-design/icons';
-import { Button, Card, Descriptions, Drawer, Empty, Input, Select, Space, Statistic, Table, Tag, Typography } from 'antd';
+import { Button, Card, Descriptions, Drawer, Empty, Input, Select, Space, Statistic, Table, Tag, Typography, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 import type { ImportBatch } from '@shared/types';
+import { exportImportLogsToCsv } from '@renderer/utils/exportImportLogs';
 
 type StatusFilter = ImportBatch['importStatus'] | 'all';
 type SourceFilter = ImportBatch['sourceType'] | 'all';
@@ -17,12 +18,26 @@ function getSourceTypeLabel(sourceType: ImportBatch['sourceType']) {
 
 function renderStatus(status: ImportBatch['importStatus']) {
   if (status === 'success') {
-    return <Tag color="success" icon={<CheckCircleOutlined />}>成功</Tag>;
+    return (
+      <Tag color="success" icon={<CheckCircleOutlined />}>
+        成功
+      </Tag>
+    );
   }
+
   if (status === 'failed') {
-    return <Tag color="error" icon={<CloseCircleOutlined />}>失败</Tag>;
+    return (
+      <Tag color="error" icon={<CloseCircleOutlined />}>
+        失败
+      </Tag>
+    );
   }
-  return <Tag color="processing" icon={<ClockCircleOutlined />}>处理中</Tag>;
+
+  return (
+    <Tag color="processing" icon={<ClockCircleOutlined />}>
+      处理中
+    </Tag>
+  );
 }
 
 export function ImportLogsPage() {
@@ -70,6 +85,16 @@ export function ImportLogsPage() {
       { total: 0, success: 0, failed: 0, inserted: 0, replaced: 0 }
     );
   }, [filteredLogs]);
+
+  const handleExport = () => {
+    if (!filteredLogs.length) {
+      message.warning('当前没有可导出的导入记录。');
+      return;
+    }
+
+    exportImportLogsToCsv(filteredLogs, `导入记录-${dayjs().format('YYYYMMDD-HHmmss')}.csv`);
+    message.success(`已导出 ${filteredLogs.length} 条导入记录。`);
+  };
 
   const columns: ColumnsType<ImportBatch & { netChange: number }> = [
     {
@@ -124,7 +149,11 @@ export function ImportLogsPage() {
       title: '操作',
       key: 'actions',
       width: 100,
-      render: (_value, record) => <Button type="link" onClick={() => setSelectedBatch(record)}>查看详情</Button>
+      render: (_value, record) => (
+        <Button type="link" onClick={() => setSelectedBatch(record)}>
+          查看详情
+        </Button>
+      )
     }
   ];
 
@@ -148,7 +177,14 @@ export function ImportLogsPage() {
       <Card
         className="panel-card"
         title="导入记录"
-        extra={<Button icon={<ReloadOutlined />} onClick={() => void loadLogs()} loading={loading}>刷新记录</Button>}
+        extra={
+          <Space>
+            <Button onClick={handleExport}>导出当前记录</Button>
+            <Button icon={<ReloadOutlined />} onClick={() => void loadLogs()} loading={loading}>
+              刷新记录
+            </Button>
+          </Space>
+        }
       >
         <Space style={{ marginBottom: 16 }} wrap>
           <Select<StatusFilter>
@@ -197,24 +233,23 @@ export function ImportLogsPage() {
         />
       </Card>
 
-      <Drawer
-        width={720}
-        title="批次详情"
-        open={!!selectedBatch}
-        onClose={() => setSelectedBatch(null)}
-      >
+      <Drawer width={720} title="批次详情" open={!!selectedBatch} onClose={() => setSelectedBatch(null)}>
         {selectedBatch ? (
           <Descriptions bordered size="small" column={2}>
             <Descriptions.Item label="批次 ID">{selectedBatch.batchId}</Descriptions.Item>
             <Descriptions.Item label="文件 Hash">{selectedBatch.fileHash}</Descriptions.Item>
-            <Descriptions.Item label="文件名" span={2}>{selectedBatch.fileName}</Descriptions.Item>
+            <Descriptions.Item label="文件名" span={2}>
+              {selectedBatch.fileName}
+            </Descriptions.Item>
             <Descriptions.Item label="模板类型">{getSourceTypeLabel(selectedBatch.sourceType)}</Descriptions.Item>
             <Descriptions.Item label="导入状态">{renderStatus(selectedBatch.importStatus)}</Descriptions.Item>
             <Descriptions.Item label="新增条数">{selectedBatch.insertedCount ?? 0}</Descriptions.Item>
             <Descriptions.Item label="替换条数">{selectedBatch.replacedCount ?? 0}</Descriptions.Item>
             <Descriptions.Item label="净变化">{Number(selectedBatch.insertedCount || 0) - Number(selectedBatch.replacedCount || 0)}</Descriptions.Item>
             <Descriptions.Item label="导入时间">{dayjs(selectedBatch.importedAt).format('YYYY-MM-DD HH:mm:ss')}</Descriptions.Item>
-            <Descriptions.Item label="错误摘要" span={2}>{selectedBatch.message || '无'}</Descriptions.Item>
+            <Descriptions.Item label="错误摘要" span={2}>
+              {selectedBatch.message || '无'}
+            </Descriptions.Item>
           </Descriptions>
         ) : null}
       </Drawer>

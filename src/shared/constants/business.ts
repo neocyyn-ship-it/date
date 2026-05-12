@@ -15,6 +15,8 @@ export const PERIOD_TYPES = {
   unknown: 'unknown'
 } as const;
 
+export const BUSINESS_TAGS = ['自然流强', '广告驱动', '高退款', '高消耗低产出'] as const;
+
 export const TAG_COLORS: Record<string, string> = {
   自然流强: 'green',
   广告驱动: 'blue',
@@ -25,8 +27,8 @@ export const TAG_COLORS: Record<string, string> = {
 export const DEFAULT_CLASSIFICATION_RULES = {
   lowSpendRatio: 0.35,
   highSpendRatio: 0.65,
-  lowRoiRatio: 0.45,
-  highRoiRatio: 0.65,
+  lowRoiRatio: 0.6,
+  highRoiRatio: 1.25,
   lowAdsContributionRatio: 0.35,
   highAdsContributionRatio: 0.55,
   refundHighRatio: 1.2

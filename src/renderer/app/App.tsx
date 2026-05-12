@@ -1,6 +1,7 @@
 import { ConfigProvider, App as AntdApp, theme } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import { HashRouter } from 'react-router-dom';
+import { RendererErrorBoundary } from '@renderer/components/RendererErrorBoundary';
 import { AppRouter } from './router';
 
 export function App() {
@@ -17,9 +18,11 @@ export function App() {
       }}
     >
       <AntdApp>
-        <HashRouter>
-          <AppRouter />
-        </HashRouter>
+        <RendererErrorBoundary>
+          <HashRouter>
+            <AppRouter />
+          </HashRouter>
+        </RendererErrorBoundary>
       </AntdApp>
     </ConfigProvider>
   );

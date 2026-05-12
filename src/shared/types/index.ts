@@ -16,6 +16,8 @@ export interface PeriodInfo {
   periodStart: string | null;
   periodEnd: string | null;
   periodType: PeriodType;
+  hasProductData?: boolean;
+  hasRefundData?: boolean;
 }
 
 export interface ImportBatch {
@@ -123,6 +125,14 @@ export interface ImportCommitResult {
 export interface FilterState {
   periodLabel?: string;
   periodType?: PeriodType | 'all';
+  sourceSheet?: string;
+  focusTag?: string;
+  minPayAmount?: number;
+  minAdCost?: number;
+  minRefundRate?: number;
+  roiBucket?: 'all' | 'lt1' | '1to2' | 'gte2';
+  adShareBucket?: 'all' | 'lt30' | '30to60' | 'gte60';
+  imageMode?: 'all' | 'withImage' | 'withoutImage';
   keyword?: string;
 }
 
@@ -152,9 +162,12 @@ export interface RankingItem {
   imagePath?: string;
   payAmount: number;
   adCost: number;
+  directGmv: number;
+  indirectGmv: number;
   totalGmv: number;
   roi: number;
   payQty: number;
+  adAttributedShare: number;
 }
 
 export interface QuadrantPoint {
@@ -245,7 +258,7 @@ export interface IEcomApi {
     saveMappings: (sourceType: SourceType, mappings: Record<string, string>) => Promise<void>;
   };
   analytics: {
-    getFilters: () => Promise<{ periods: PeriodInfo[] }>;
+    getFilters: () => Promise<{ periods: PeriodInfo[]; sourceSheets: string[] }>;
     getDashboard: (filters: FilterState) => Promise<DashboardPayload>;
     getMarketing: (filters: FilterState) => Promise<MarketingEfficiency>;
     getRefundDiagnostics: (filters: FilterState) => Promise<RefundDiagnostics>;

@@ -10,17 +10,24 @@ interface Props {
 }
 
 export function FieldMappingEditor({ headers, missingFields, value, detectedMappings, onChange, onSave }: Props) {
-  if (!missingFields.length) return null;
+  if (!missingFields.length) {
+    return null;
+  }
 
   const setField = (field: string, selected?: string) => {
     const next = { ...value };
-    if (selected) next[field] = selected;
-    else delete next[field];
+    if (selected) {
+      next[field] = selected;
+    } else {
+      delete next[field];
+    }
     onChange(next);
   };
 
   const applyDetected = () => {
-    if (!detectedMappings) return;
+    if (!detectedMappings) {
+      return;
+    }
     onChange({ ...value, ...detectedMappings });
   };
 
@@ -38,9 +45,17 @@ export function FieldMappingEditor({ headers, missingFields, value, detectedMapp
       title="字段映射修正"
       extra={
         <Space>
-          <Button size="small" onClick={applyDetected}>使用系统建议</Button>
-          <Button size="small" onClick={clearMissing}>清空当前选择</Button>
-          {onSave ? <Button size="small" type="primary" onClick={onSave}>保存为模板配置</Button> : null}
+          <Button size="small" onClick={applyDetected}>
+            使用系统建议
+          </Button>
+          <Button size="small" onClick={clearMissing}>
+            清空当前选择
+          </Button>
+          {onSave ? (
+            <Button size="small" type="primary" onClick={onSave}>
+              保存为模板配置
+            </Button>
+          ) : null}
         </Space>
       }
     >

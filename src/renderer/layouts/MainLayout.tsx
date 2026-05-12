@@ -33,9 +33,7 @@ export function MainLayout() {
           <Typography.Title level={4} style={{ color: '#fff', margin: 0 }}>
             经营分析工作台
           </Typography.Title>
-          <Typography.Text style={{ color: 'rgba(255,255,255,0.65)' }}>
-            本地 Excel 持续分析
-          </Typography.Text>
+          <Typography.Text style={{ color: 'rgba(255,255,255,0.65)' }}>本地 Excel 持续分析</Typography.Text>
         </div>
         <Menu
           theme="dark"
@@ -52,9 +50,7 @@ export function MainLayout() {
             <Typography.Title level={3} style={{ margin: 0 }}>
               女装电商经营分析桌面应用
             </Typography.Title>
-            <Typography.Text type="secondary">
-              支持持续导入、周期替换、图片关联与半自助经营分析
-            </Typography.Text>
+            <Typography.Text type="secondary">支持持续导入、周期替换、图片关联与半自助经营分析</Typography.Text>
           </div>
         </Header>
         <Content className="content-shell">

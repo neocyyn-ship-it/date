@@ -1,5 +1,5 @@
-import ReactECharts from 'echarts-for-react';
 import { Card, Empty, Spin } from 'antd';
+import ReactECharts from 'echarts-for-react';
 
 interface Props {
   title: string;
@@ -10,13 +10,16 @@ interface Props {
 }
 
 export function BaseChartCard({ title, loading, option, height = 340, onEvents }: Props) {
+  const series = option?.series;
+  const isEmpty = !series || (Array.isArray(series) && series.length === 0);
+
   return (
     <Card className="panel-card" title={title}>
       {loading ? (
         <div className="chart-placeholder">
           <Spin />
         </div>
-      ) : !option?.series || (Array.isArray(option.series) && option.series.length === 0) ? (
+      ) : isEmpty ? (
         <div className="chart-placeholder">
           <Empty description="暂无图表数据" />
         </div>
